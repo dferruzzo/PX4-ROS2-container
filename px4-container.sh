@@ -26,14 +26,14 @@ fi
 # Permite acesso ao X server
 xhost +local:docker >/dev/null
 
-docker run -it --init --rm --privileged \
-    --env=LOCAL_USER_ID="$(id -u)" \
+docker run -it --init --rm --privileged -u root \
+    --entrypoint "" \
     -v $PX4_DIR:$PX4_DIR:rw \
     -w $PX4_DIR \
     -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
-    -e DISPLAY=:0 \
+    -e DISPLAY=$DISPLAY \
     -p 14570:14570/udp \
     --name="PX4-ROS2" $PX4_IMAGE \
-    bash -c "${COMMAND:-bash}"
+    bash -c "echo 'user ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/nopasswd && chmod 0440 /etc/sudoers.d/nopasswd && usermod -aG sudo user && chown -R user:user $PX4_DIR && su - user -c 'export DISPLAY=$DISPLAY && cd $PX4_DIR && ${COMMAND:-bash}'"
 xhost -local:docker >/dev/null
 
