@@ -12,7 +12,6 @@ services:
     entrypoint: ""
     volumes:
       - ${HOME}/PX4-Autopilot:/root/PX4-Autopilot:rw
-
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
     environment:
       - DISPLAY=${DISPLAY}
