@@ -1,0 +1,32 @@
+FROM ros:foxy
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# ---- System dependencies ----
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    wget \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---- Modern CMake (required by fastcdr) ----
+RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.27.9/cmake-3.27.9-linux-x86_64.tar.gz \
+ && tar -xzf cmake-3.27.9-linux-x86_64.tar.gz \
+ && mv cmake-3.27.9-linux-x86_64 /opt/cmake \
+ && ln -sf /opt/cmake/bin/cmake /usr/local/bin/cmake
+
+# ---- Build Micro-XRCE-DDS-Agent ----
+WORKDIR /opt
+
+RUN git clone -b v2.4.3 https://github.com/eProsima/Micro-XRCE-DDS-Agent.git \
+ && cd Micro-XRCE-DDS-Agent \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make -j$(nproc) \
+ && make install \
+ && ldconfig /usr/local/lib
+
+# Reset workspace
+WORKDIR /root

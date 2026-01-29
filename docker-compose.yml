@@ -1,0 +1,38 @@
+
+services:
+  px4:
+    image: px4io/px4-dev-ros2-foxy:latest
+    container_name: PX4
+    user: root
+    privileged: true
+    network_mode: "host"
+    stdin_open: true
+    tty: true
+    working_dir: /root/PX4-Autopilot
+    entrypoint: ""
+    volumes:
+      - ${HOME}/PX4-Autopilot:/root/PX4-Autopilot:rw
+
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    environment:
+      - DISPLAY=${DISPLAY}
+
+  ros2:
+    build:
+      context: .
+      dockerfile: Dockerfile.ros2
+    container_name: ROS2
+    user: root
+    privileged: true
+    network_mode: "host"
+    stdin_open: true
+    tty: true
+    working_dir: /root/ros2_ws
+    entrypoint: ""
+    volumes:
+      - ${HOME}/ros2/ws:/root/ros2_ws:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    environment:
+      - DISPLAY=${DISPLAY}
+    depends_on:
+      - px4
