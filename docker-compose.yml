@@ -1,6 +1,17 @@
 version: "3.9"
 
 services:
+  xserver:
+    image: devrt/xserver
+    ipc: host
+    security_opt:
+      - seccomp:unconfined
+    ports:  
+      - "3001:80"
+    healthcheck:
+      test: ["CMD-SHELL", "test -e /tmp/.X11-unix/X0"]
+      interval: 1s
+      retries: 20
   px4:
     build:
       context: .
@@ -18,7 +29,6 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
     environment:
       - DISPLAY=${DISPLAY}
-
   ros2:
     build:
       context: .
