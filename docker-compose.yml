@@ -1,7 +1,10 @@
+version: "3.9"
 
 services:
   px4:
-    image: px4io/px4-dev-ros2-foxy:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.px4
     container_name: PX4
     user: root
     privileged: true
@@ -12,9 +15,12 @@ services:
     entrypoint: ""
     volumes:
       - ${HOME}/PX4-Autopilot:/root/PX4-Autopilot:rw
-      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - /mnt/wslg:/mnt/wslg
     environment:
       - DISPLAY=${DISPLAY}
+      - WAYLAND_DISPLAY=wayland-0
+      - XDG_RUNTIME_DIR=/mnt/wslg/runtime-dir
+      - PULSE_SERVER=/mnt/wslg/PulseServer
 
   ros2:
     build:
@@ -30,8 +36,11 @@ services:
     entrypoint: ""
     volumes:
       - ${HOME}/ros2/ws:/root/ros2_ws:rw
-      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - /mnt/wslg:/mnt/wslg
     environment:
       - DISPLAY=${DISPLAY}
+      - WAYLAND_DISPLAY=wayland-0
+      - XDG_RUNTIME_DIR=/mnt/wslg/runtime-dir
+      - PULSE_SERVER=/mnt/wslg/PulseServer
     depends_on:
       - px4

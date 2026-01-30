@@ -1,0 +1,30 @@
+FROM px4io/px4-dev-ros2-foxy:latest
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Atualiza pacotes básicos
+RUN apt-get update && apt-get install -y \
+    git \
+    python3-pip \
+    python3-colcon-common-extensions \
+    nano \
+    vim \
+    && apt-get clean
+
+# Dependências Python do PX4
+RUN pip3 install --upgrade pip \
+    && pip3 install \
+        empy \
+        jinja2 \
+        numpy \
+        toml \
+        packaging \
+        pyros-genmsg
+
+# Garante permissões
+RUN mkdir -p /root/PX4-Autopilot
+
+WORKDIR /root/PX4-Autopilot
+
+# Fonte ROS 2 (por segurança)
+RUN echo "source /opt/ros/foxy/setup.bash" >> /root/.bashrc
